@@ -65,8 +65,8 @@ jobs:
     - name: Docker build & push
       if: contains(github.ref, 'prac/dev')
       run: |
-        docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/prac .
-        docker push ${{ secrets.DOCKER_REPO }}/prac
+        docker build -t askthem@naver.com/my-java-app .
+        docker push askthem@naver.com/my-java-app
         
 ## ## sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO }}/agaproject
 
@@ -83,6 +83,6 @@ jobs:
         script: |
           sudo docker ps
           sudo docker rm -f $(docker ps -qa)
-          sudo docker pull ${{ secrets.DOCKER_REPO }}/prac
-          sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO }}/prac
+          sudo docker pull askthem@naver.com/my-java-app
+          sudo docker run -d -p 8080:8080 askthem@naver.com/my-java-app
           sudo docker image prune -f
