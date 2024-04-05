@@ -62,11 +62,14 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     # docker build & push to production
-    - name: Docker build & push
-      if: contains(github.ref, 'prac/dev')
+    - name: Build Docker image
       run: |
-        docker build -t hiyen/prac .
-        docker push hiyen/prac
+        docker build -t hiyen/prac \
+        --build-arg APPLICATION_PROPERTIES="${{ secrets.APPLICATION_PROPERTIES }}" \
+        .
+
+    - name: Push Docker image
+      run: docker push hiyen/prac
         
 ## ## sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO }}/agaproject
 
