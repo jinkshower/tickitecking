@@ -20,9 +20,6 @@ jobs:
     steps:
     # JDK setting - github actions에서 사용할 JDK 설정 (aws 과 project의 java 버전과 별도로 관리)
     - uses: actions/checkout@v3
-      with:
-          token: ${{ secrets.ACTION_TOKEN }}
-          submodules: true
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
@@ -39,6 +36,11 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+
+    - uses: actions/checkout@v3
+    - run: touch ./src/main/resources/application.properties
+    - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+    - run: cat ./src/main/resources/application.properties
 
     # gradle chmod
     - name: Grant execute permission for gradlew
