@@ -74,7 +74,7 @@ jobs:
         port: 22
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
-          sudo docker stop $(sudo docker ps -a -q) 
-          sudo docker rm $(sudo docker ps -a -q) 
+          sudo docker stop tickitecking || true
+          sudo docker rm tickitecking || true
           sudo docker pull hiyen/prac
           sudo docker run -d -p 8080:8080 --name tickitecking hiyen/prac
