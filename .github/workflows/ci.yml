@@ -29,6 +29,12 @@ jobs:
       - name: Gradle 명령 실행을 위한 권한을 부여합니다
         run: chmod +x gradlew
 
+      - uses: actions/checkout@v3
+      - run: mkdir -p ./src/main/resources
+      - run: touch ./src/main/resources/application.properties
+      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+      - run: cat ./src/main/resources/application.properties
+
       - name: Gradle build를 수행합니다
         run: ./gradlew build
 
