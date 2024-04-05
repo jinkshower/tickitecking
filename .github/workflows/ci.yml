@@ -41,8 +41,8 @@ jobs:
     - name: make application.properties
       if: always()
       run: |
-        cd ./src/main/resources
-        touch ./application.properties
+        mkdir -p ./src/main/resources
+        touch ./src/main/resources/application.properties
         echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./application.properties
       shell: bash
 
