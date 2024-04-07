@@ -18,27 +18,36 @@ import com.laydowncoding.tickitecking.global.exception.errorcode.ConcertErrorCod
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final SeatRepository seatRepository;
     private final ConcertRepository concertRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public ReservationResponseDto createReservation(Long userId, Long concertId,
         ReservationRequestDto requestDto) {
 
-        if (!isReservable(concertId, requestDto.getHorizontal(), requestDto.getVertical())) {
-            throw new CustomRuntimeException("예약 불가능한 좌석입니다.");
+        if (isTaken(concertId, requestDto.getHorizontal(), requestDto.getVertical())) {
+            throw new CustomRuntimeException("이미 예약된 좌석입니다.");
         }
+
         Seat seat = seatRepository.findByConcertIdAndHorizontalAndVertical(concertId,
             requestDto.getHorizontal(), requestDto.getVertical());
+
+        if (!seat.isReservable()) {
+            throw new CustomRuntimeException("예약 불가능한 좌석입니다.");
+        }
         seat.reserve();
 
         Reservation reservation = Reservation.builder()
@@ -56,6 +65,12 @@ public class ReservationServiceImpl implements ReservationService {
             .concertId(save.getConcertId())
             .seatId(save.getSeatId())
             .build();
+    }
+
+    private Boolean isTaken(Long concertId, String horizontal, String vertical) {
+        String key = concertId + horizontal + vertical;
+        return Boolean.FALSE.equals(
+            redisTemplate.opsForValue().setIfAbsent(key, "reserved"));
     }
 
     @Override
@@ -76,12 +91,13 @@ public class ReservationServiceImpl implements ReservationService {
         validateUserId(reservation.getUserId(), userId);
         Seat seat = seatRepository.findById(reservation.getSeatId()).orElseThrow();
         seat.cancel();
+        redisTemplate.delete(reservation.getConcertId() + seat.getHorizontal() + seat.getVertical());
         reservationRepository.delete(reservation);
     }
-
-    private boolean isReservable(Long eventId, String horizontal, String vertical) {
-        return seatRepository.isReservable(eventId, horizontal, vertical);
-    }
+//
+//    private boolean isReservable(Long eventId, String horizontal, String vertical) {
+//        return seatRepository.isReservable(eventId, horizontal, vertical);
+//    }
 
     private Reservation findReservation(Long reservationId) {
         return reservationRepository.findById(reservationId).orElseThrow(

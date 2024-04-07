@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,9 @@ public class Seat {
 
   @Column(nullable = false, columnDefinition = "CHAR(1) default 'N'")
   private String reserved;
+//
+//  @Version
+//  private Integer version;
 
   public Seat(String vertical, String horizontal, String availability, String grade, Long auditoriumId) {
     this.vertical = vertical;
@@ -79,5 +83,9 @@ public class Seat {
 
   public void cancel() {
     this.reserved = "N";
+  }
+
+  public boolean isReservable() {
+    return this.reserved.equals("N") && this.availability.equals("Y");
   }
 }

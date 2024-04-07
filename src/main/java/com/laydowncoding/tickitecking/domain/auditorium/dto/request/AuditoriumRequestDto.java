@@ -3,12 +3,14 @@ package com.laydowncoding.tickitecking.domain.auditorium.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AuditoriumRequestDto {
 
   @NotBlank
