@@ -119,6 +119,7 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SeatPriceDto getSeatPrices(Long concertId) {
         List<SeatPrice> seatPrices = seatPriceRepository.findAllByConcertId(concertId);
         Map<String, Double> seatPricesMap = new HashMap<>();
